@@ -6,7 +6,8 @@ import requests
 import TreeConstruction
 from Bio import AlignIO
 import copy
-from Bio.Phylo import BaseTree
+
+from Bio import Phylo
 import Consensus
 #"home/sileadim/workspace/Praktikum2/praktikum2.fasta"
 
@@ -59,7 +60,7 @@ def makeDistanceMatrix(filename):
     return dm
 def createBootstrapTrees(filename):
     aln = AlignIO.read(filename, 'phylip')
-    msas = Consensus.bootstrap(aln, 10)
+    msas = Consensus.bootstrap(aln, 100)
     returnList = []
     for msa in msas:
         calculator = TreeConstruction.DistanceCalculator('identity')
@@ -80,7 +81,7 @@ def upgma(distance_matrix):
     # make a copy of the distance matrix to be used
     dm = copy.deepcopy(distance_matrix)
         # init terminal clades
-    clds = [BaseTree.Clade(None, name) for name in dm.names]
+    clds = [Phylo.BaseTree.Clade(None, name) for name in dm.names]
         # init minimum index
     minI = 0
     minJ = 0
@@ -99,7 +100,7 @@ def upgma(distance_matrix):
         clade1 = clds[minI]
         clade2 = clds[minJ]
         count += 1
-        inClade = BaseTree.Clade(None, "Inner" + str(count))
+        inClade = Phylo.BaseTree.Clade(None, "Inner" + str(count))
         inClade.clades.append(clade1)
         inClade.clades.append(clade2)
                     #assign branch length
@@ -127,14 +128,18 @@ def upgma(distance_matrix):
 
         del dm[minI]
     inClade.branch_length = 0
-    return BaseTree.Tree(inClade)
+    return Phylo.BaseTree.Tree(inClade)
 
 
 if __name__ == "__main__":
-    filename = "praktikum2.fasta.txt"   
+    filename = "praktikum2.fasta"   
     alnName = makeMSA(filename)
+    #alnName = "muscle-R20131208-143154-0883-58585614-oyalignment.phy"
     dm = makeDistanceMatrix(alnName)
     tree = upgma(dm)
+    print "contructing bootstrpping trees..."
     bootstrapTrees = createBootstrapTrees(alnName)
     print "trees constructed"
+    support_tree = Consensus.get_support(tree, bootstrapTrees)
+    print support_tree
     
