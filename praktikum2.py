@@ -7,7 +7,7 @@ import TreeConstruction
 from Bio import AlignIO
 import copy
 from Bio.Phylo import BaseTree
-from Bio.Align import MultipleSeqAlignment
+import Consensus
 #"home/sileadim/workspace/Praktikum2/praktikum2.fasta"
 
 
@@ -57,6 +57,15 @@ def makeDistanceMatrix(filename):
     calculator = TreeConstruction.DistanceCalculator('identity')
     dm = calculator.get_distance(aln)
     return dm
+def createBootstrapTrees(filename):
+    aln = AlignIO.read(filename, 'phylip')
+    msas = Consensus.bootstrap(aln, 10)
+    returnList = []
+    for msa in msas:
+        calculator = TreeConstruction.DistanceCalculator('identity')
+        dm = calculator.get_distance(aln)
+        returnList.append(upgma(dm))
+    return returnList
 
 def cladeHeight(clade):
     height = 0
@@ -125,5 +134,7 @@ if __name__ == "__main__":
     filename = "praktikum2.fasta.txt"   
     alnName = makeMSA(filename)
     dm = makeDistanceMatrix(alnName)
-    print upgma(dm)
+    tree = upgma(dm)
+    bootstrapTrees = createBootstrapTrees(alnName)
+    print "trees constructed"
     
