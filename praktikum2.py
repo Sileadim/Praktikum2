@@ -63,7 +63,7 @@ def createBootstrapTrees(filename):
     returnList = []
     for msa in msas:
         calculator = TreeConstruction.DistanceCalculator('identity')
-        dm = calculator.get_distance(aln)
+        dm = calculator.get_distance(msa)
         returnList.append(upgma(dm))
     return returnList
 
