@@ -1,12 +1,11 @@
 #!/usr/bin/python
 
-
 import time
 import requests
 import TreeConstruction
 from Bio import AlignIO
 import copy
-
+import sys
 from Bio import Phylo
 import Consensus
 #"home/sileadim/workspace/Praktikum2/praktikum2.fasta"
@@ -132,7 +131,7 @@ def upgma(distance_matrix):
 
 
 if __name__ == "__main__":
-    filename = "praktikum2.fasta"   
+    filename = sys.argv[1]  
     alnName = makeMSA(filename)
     #alnName = "muscle-R20131208-143154-0883-58585614-oyalignment.phy"
     dm = makeDistanceMatrix(alnName)
